@@ -1,0 +1,31 @@
+
+name: Examinar ZIP do KORDEL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositorio
+        uses: actions/checkout@v4
+
+      - name: Extrair ZIP
+        run: |
+          ZIP=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          if [ -z "$ZIP" ]; then
+            echo "ERRO: ZIP nao encontrado"
+            exit 1
+          fi
+          mkdir projeto
+          unzip -q "$ZIP" -d projeto
+
+      - name: Examinar arquivos
+        run: |
+          echo "=== ARQUIVOS ENCONTRADOS ==="
+          find projeto -maxdepth 4 -type f | head -150
+          echo "=== LOCALIZACAO DO PACKAGE.JSON ==="
+          find projeto -name package.json
+          echo "=== CONFIGURACAO DO PROJETO ==="
+          find projeto -name package.json -exec cat {} \;
